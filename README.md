@@ -139,3 +139,4 @@ PORT_PHP=8000
 PORT_MYSQL=9906
 MYSQL_ROOT_PASSWORD=password123
 ```
+**_NOTE:_** The above values are random and do not represent real values
