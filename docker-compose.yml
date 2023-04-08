@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  web:
+    container_name: php_web
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - ./php-mysql-crud/:/var/www/html
+    env_file:
+      - .env
+    # Setting a default port facing the host to 8080 in case .env file does not contain any value
+    ports:
+      - ${PORT_PHP:-8080}:80
+    networks: 
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+  db:
+    container_name: mysql_db
+    image: mysql:8
+    restart: always
+    # Setting a default pw, in case .env file does not contain any value
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-c2Kyx9mO98ehSD}
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./php-mysql-crud/database/script.sql:/docker-entrypoint-initdb.d/script.sql
+    # Setting a default port facing the host to 9306 in case .env file does not contain any value
+    ports:
+      - ${PORT_MYSQL:-9306}:3306
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+# Creates a backend bridge network
+networks:
+  backend:
+# Makes database data volume persistent
+volumes:
+  db-data:
